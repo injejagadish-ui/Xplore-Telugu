@@ -1,35 +1,35 @@
 import os
 import requests
-import json
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 def generate_telugu_fact():
 
     if not API_KEY:
-        raise ValueError("Gemini API key is missing")
+        raise ValueError("GEMINI_API_KEY is missing")
 
     url = (
         "https://generativelanguage.googleapis.com/"
         "v1beta/models/gemini-2.5-flash:generateContent"
-        f"?key={API_KEY}"
     )
 
     prompt = """
-    Create one amazing and scientifically accurate fact
-    for a Telugu YouTube Short.
+    Write one interesting and scientifically accurate
+    fact for a Telugu YouTube Shorts video.
 
-    Requirements:
-    - Telugu language
-    - 30-second narration
-    - Powerful opening hook
-    - Interesting explanation
-    - Exciting ending
-    - Return only the narration.
+    Language: Telugu
+    Duration: 30 seconds
+    Include:
+    1. Powerful opening hook
+    2. Interesting explanation
+    3. Exciting ending
+
+    Return only the Telugu narration.
     """
 
     response = requests.post(
         url,
+        params={"key": API_KEY},
         json={
             "contents": [{
                 "parts": [{"text": prompt}]
@@ -38,18 +38,20 @@ def generate_telugu_fact():
         timeout=60
     )
 
-    response.raise_for_status()
+    if response.status_code != 200:
+        print("GEMINI ERROR:")
+        print(response.text)
+        raise Exception("Gemini API request failed")
 
     data = response.json()
 
     script = data["candidates"][0]["content"]["parts"][0]["text"]
 
-    print("TELUGU YOUTUBE SHORT SCRIPT")
-    print("==========================")
-    print(script)
+    with open("script.txt", "w", encoding="utf-8") as f:
+        f.write(script)
 
-    with open("script.txt", "w", encoding="utf-8") as file:
-        file.write(script)
+    print("SUCCESS! Telugu script generated.")
+    print(script)
 
 
 if __name__ == "__main__":
