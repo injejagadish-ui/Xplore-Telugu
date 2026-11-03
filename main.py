@@ -10,7 +10,7 @@ def generate_telugu_fact():
     if not API_KEY:
         raise ValueError("GEMINI_API_KEY is missing")
 
-    model = "gemini-3.8-flash"
+    model = model = "gemini-3.5-flash-lite"
 
     url = (
         "https://generativelanguage.googleapis.com/"
